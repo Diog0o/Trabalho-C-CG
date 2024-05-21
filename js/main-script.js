@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import Stats from 'three/addons/libs/stats.module.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 
 let scene, camera, renderer, controls, stats, gui;
@@ -69,6 +68,24 @@ function createScene() {
     scene.add(skydome);
 }
 
+function createCamera() {
+    'use strict';
+
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 10;
+}
+
+function createLights() {
+    'use strict';
+
+    const ambientLight = new THREE.AmbientLight(ambientLightColor, ambientLightIntensity); // Low intensity orange light
+    scene.add(ambientLight);
+
+    directionalLight = new THREE.DirectionalLight(directionalLightColor, directionalLightIntensity);
+    directionalLight.position.set(1, 1, 1).normalize();
+    scene.add(directionalLight);
+}
+
 function createObjects() {
     'use strict';
     
@@ -104,79 +121,17 @@ function createObjects() {
                 materials.forEach(material => material.needsUpdate = !material.needsUpdate);
                 break;
             case '1':
-                moveRingAndSurfaces(0);
+                ringSpeeds[0] = ringSpeeds[0] === 0 ? 0.01 : 0;
                 break;
             case '2':
-                moveRingAndSurfaces(1);
+                ringSpeeds[1] = ringSpeeds[1] === 0 ? 0.01 : 0;
                 break;
             case '3':
-                moveRingAndSurfaces(2);
+                ringSpeeds[2] = ringSpeeds[2] === 0 ? 0.01 : 0;
                 break;
         }
         updateMaterials();
     });
-}
-
-function createMobiusStrip() {
-    'use strict';
-
-    const segments = 100;
-    const radius = 1;
-    const width = 0.2;
-
-    const vertices = [];
-    const indices = [];
-
-    for (let i = 0; i <= segments; i++) {
-        const t = i / segments * Math.PI * 2;
-        const x = Math.cos(t) * (radius + width * Math.cos(t / 2));
-        const y = Math.sin(t) * (radius + width * Math.cos(t / 2));
-        const z = width * Math.sin(t / 2);
-        vertices.push(x, y, z);
-    }
-
-    for (let i = 0; i < segments; i++) {
-        indices.push(i, i + 1, (i + 2) % (segments + 1));
-    }
-
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    geometry.computeVertexNormals();
-
-    const material = new THREE.MeshLambertMaterial({ color: 0xffff00, side: THREE.DoubleSide });
-    mobiusStrip = new THREE.Mesh(geometry, material);
-    mobiusStrip.rotation.x = Math.PI / 2;
-    scene.add(mobiusStrip);
-}
-
-function moveRingAndSurfaces(ringIndex) {
-    const ring = rings[ringIndex];
-    const surfaces = parametricSurfaces.filter(ps => ps.ring === ring).map(ps => ps.mesh);
-
-    ring.position.y += 0.5; // Adjust the amount as needed
-    surfaces.forEach(surface => {
-        surface.position.y += 0.5; // Move surfaces along with their ring
-    });
-}
-
-function createCamera() {
-    'use strict';
-
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 10;
-}
-
-
-function createLights() {
-    'use strict';
-
-    const ambientLight = new THREE.AmbientLight(ambientLightColor, ambientLightIntensity); // Low intensity orange light
-    scene.add(ambientLight);
-
-    directionalLight = new THREE.DirectionalLight(directionalLightColor, directionalLightIntensity);
-    directionalLight.position.set(1, 1, 1).normalize();
-    scene.add(directionalLight);
 }
 
 function init() {
@@ -242,25 +197,14 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// Event handlers
 function onResize() {
-    'use strict';
-
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function onKeyDown(event) {
-    'use strict';
-
-    keyState[event.keyCode || event.which] = true;
-}
-
-function onKeyUp(event) {
-    'use strict';
-
-    keyState[event.keyCode || event.which] = false;
+    keyState[event.key] = true;
 }
 
 init();
