@@ -68,7 +68,7 @@ function createScene() {
             segment.add(boxMesh);
         }
     
-        
+        // Centralizar a faixa de Möbius no eixo Y
         mobiusStrip.position.set(0, 10, 0);
         scene.add(mobiusStrip);
     }
@@ -181,18 +181,26 @@ function createObjects() {
     'use strict';
 
     const materials = [
-        new THREE.MeshLambertMaterial({ color: 0x0000ff }),
-        new THREE.MeshPhongMaterial({ color: 0x0000ff }),
-        new THREE.MeshToonMaterial({ color: 0x0000ff }),
+        new THREE.MeshLambertMaterial({ color: 0x0000ff }), // Azul
+        new THREE.MeshPhongMaterial({ color: 0x00000ff }), // Azul (erro de digitação)
+        new THREE.MeshToonMaterial({ color: 0x0000ff }), // Azul
         new THREE.MeshNormalMaterial()
     ];
 
     let currentMaterialIndex = 0;
+    let previousMaterialIndex = 0; // Armazena o índice do material antes de alternar para o material básico
+    let useBasicMaterial = false; // Controla se o material básico (sem iluminação) está sendo usado
 
     function updateMaterials() {
-        rings.forEach(ring => {
-            ring.material = materials[currentMaterialIndex];
-        });
+        if (useBasicMaterial) {
+            rings.forEach(ring => {
+                ring.material = new THREE.MeshBasicMaterial({ color: ring.material.color });
+            });
+        } else {
+            rings.forEach(ring => {
+                ring.material = materials[currentMaterialIndex];
+            });
+        }
     }
 
     document.addEventListener('keydown', (event) => {
@@ -224,13 +232,24 @@ function createObjects() {
                 break;
             case 'p':
                 pointLightOn = !pointLightOn;
-                pointLights.forEach(light => light.visible = pointLightOn); // Alternar visibilidade
+                pointLights.forEach(light => light.visible = pointLightOn);
+                break;
+            case 't':
+                if (!useBasicMaterial) {
+                    // Salva o índice do material antes de alternar para o material básico
+                    previousMaterialIndex = currentMaterialIndex;
+                    currentMaterialIndex = materials.length; // Índice para o material básico
+                } else {
+                    // Volta para o material anterior (com iluminação)
+                    currentMaterialIndex = previousMaterialIndex;
+                }
+                useBasicMaterial = !useBasicMaterial; // Alterna entre o material básico (sem iluminação) e o material atual
                 break;
         }
         updateMaterials();
     });
-    
 }
+
 function init() {
     'use strict';
 
