@@ -5,59 +5,96 @@ import Stats from 'three/addons/libs/stats.module.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 
 let scene, camera, renderer, controls, stats, gui;
-let cylinder, rings = [], parametricSurfaces = [];
+let rings = [];
 let keyState = {};
-let materials, currentMaterialIndex = 0;
+let ringSpeeds = [0.01, 0.01, 0.01];
+const ringLimits = { min: 0, max: 4 };
+const ringMoveSpeeds = [0.02, 0.02, 0.02];  // Speed of movement along the y-axis
+let ringDirections = [1, 1, 1];  // Direction of movement along the y-axis
 
 const ambientLightColor = 0xffa500;
 const ambientLightIntensity = 0.2;
 const directionalLightColor = 0xffffff;
 const directionalLightIntensity = 1;
 let directionalLight;
-let ringSpeeds = [0, 0, 0];
-const ringLimits = { min: -1, max: 1 };
 
 function createScene() {
     'use strict';
 
     scene = new THREE.Scene();
 
-    // Create the central cylinder
-    const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 2, 32);
-    const cylinderMaterial = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
-    cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
-    scene.add(cylinder);
+    function createRingGeometry(innerRadius, outerRadius, thickness, segments) {
+        const shape = new THREE.Shape();
+        shape.moveTo(outerRadius, 0);
+        shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
 
-    // Create the concentric flat rings and rotate them to be horizontal
-    for (let i = 0; i < 3; i++) {
-        const ringGeometry = new THREE.RingGeometry(2.5 + i * 2, 2 + i * 2, 32);
-        const ringMaterial = new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide });
-        const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-        ring.rotation.x = Math.PI / 2; // Rotate to be horizontal
-        ring.position.y = -1 + i * 0.5; // Adjust vertical position to stack without gaps
-        rings.push(ring);
-        scene.add(ring);
+        const hole = new THREE.Path();
+        hole.moveTo(innerRadius, 0);
+        hole.absarc(0, 0, innerRadius, 0, Math.PI * 2, true);
+        shape.holes.push(hole);
 
-        // Create parametric surfaces associated with each ring
-        const parametricMaterial = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+        const extrudeSettings = {
+            steps: 1,
+            depth: thickness,
+            bevelEnabled: false
+        };
 
-        for (let j = 0; j < 8; j++) {
-            const parametricGeometry = new ParametricGeometry((u, v, target) => {
-                const x = u * 2 - 1;
-                const y = v * 2 - 1;
-                const z = Math.sin(x * Math.PI);
-                target.set(x, y, z);
-            }, 10, 10);
-            const surface = new THREE.Mesh(parametricGeometry, parametricMaterial);
-            surface.position.set(Math.cos(j * Math.PI / 4) * (2.5 + i * 2), -1 + i * 0.5, Math.sin(j * Math.PI / 4) * (2.5 + i * 2));
-            parametricSurfaces.push({ mesh: surface, ring: ring });
-            scene.add(surface);
+        return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    }
+
+    function addCubesToRing(ring, radius, cubeSize, numCubes) {
+        const angleStep = (Math.PI * 2) / numCubes;
+        for (let i = 0; i < numCubes; i++) {
+            const angle = i * angleStep;
+            const x = radius * Math.cos(angle);
+            const y = radius * Math.sin(angle);
+            const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+            const cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffff00 });
+            const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            // Center the cubes on the ring's thickness
+            cube.position.set(x, y, cubeSize / 2); 
+            cube.lookAt(0, 0, 0); // Ensure the cubes are facing outward
+            ring.add(cube);
         }
     }
 
-    // Create a skydome
+    const ringGeometry1 = createRingGeometry(1, 3, 4, 32);
+    const ringMaterial1 = new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+    const ring1 = new THREE.Mesh(ringGeometry1, ringMaterial1);
+    ring1.rotation.x = Math.PI / 2;
+    ring1.position.set(0, 0, 0);
+    rings.push(ring1);
+    scene.add(ring1);
+
+    addCubesToRing(ring1, 2, 0.5, 8);
+
+
+    const ringGeometry2 = createRingGeometry(3, 5, 4, 32);
+    const ringMaterial2 = new THREE.MeshPhongMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+    const ring2 = new THREE.Mesh(ringGeometry2, ringMaterial2);
+    ring2.rotation.x = Math.PI / 2;
+    ring2.position.set(0, 0, 0);
+    rings.push(ring2);
+    scene.add(ring2);
+    addCubesToRing(ring2, 4, 0.5, 8);
+
+    const ringGeometry3 = createRingGeometry(5, 7, 4, 32);
+    const ringMaterial3 = new THREE.MeshToonMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
+    const ring3 = new THREE.Mesh(ringGeometry3, ringMaterial3);
+    ring3.rotation.x = Math.PI / 2;
+    ring3.position.set(0, 0, 0);
+    rings.push(ring3);
+    scene.add(ring3);
+    addCubesToRing(ring3, 6, 0.5, 8);
+
+    const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 8, 32);
+    const cylinderMaterial = new THREE.MeshNormalMaterial();
+    const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+    cylinder.position.set(0, 0, 0);
+    scene.add(cylinder);
+
     const loader = new THREE.TextureLoader();
-    const texture = loader.load('imagem.png'); // Correct path to your image file
+    const texture = loader.load('imagem.png');
 
     const skyGeometry = new THREE.SphereGeometry(500, 60, 40);
     const skyMaterial = new THREE.MeshBasicMaterial({
@@ -78,7 +115,7 @@ function createCamera() {
 function createLights() {
     'use strict';
 
-    const ambientLight = new THREE.AmbientLight(ambientLightColor, ambientLightIntensity); // Low intensity orange light
+    const ambientLight = new THREE.AmbientLight(ambientLightColor, ambientLightIntensity);
     scene.add(ambientLight);
 
     directionalLight = new THREE.DirectionalLight(directionalLightColor, directionalLightIntensity);
@@ -88,18 +125,19 @@ function createLights() {
 
 function createObjects() {
     'use strict';
-    
-    // Add material and shading setup
-    materials = [
+
+    const materials = [
         new THREE.MeshLambertMaterial({ color: 0x0000ff }),
         new THREE.MeshPhongMaterial({ color: 0x0000ff }),
         new THREE.MeshToonMaterial({ color: 0x0000ff }),
         new THREE.MeshNormalMaterial()
     ];
 
+    let currentMaterialIndex = 0;
+
     function updateMaterials() {
-        [cylinder, ...rings, ...parametricSurfaces.map(ps => ps.mesh)].forEach(obj => {
-            obj.material = materials[currentMaterialIndex];
+        rings.forEach(ring => {
+            ring.material = materials[currentMaterialIndex];
         });
     }
 
@@ -117,17 +155,14 @@ function createObjects() {
             case 'r':
                 currentMaterialIndex = 3;
                 break;
-            case 't':
-                materials.forEach(material => material.needsUpdate = !material.needsUpdate);
-                break;
             case '1':
-                ringSpeeds[0] = ringSpeeds[0] === 0 ? 0.01 : 0;
+                ringMoveSpeeds[0] = ringMoveSpeeds[0] === 0 ? 0.02 : 0;
                 break;
             case '2':
-                ringSpeeds[1] = ringSpeeds[1] === 0 ? 0.01 : 0;
+                ringMoveSpeeds[1] = ringMoveSpeeds[1] === 0 ? 0.02 : 0;
                 break;
             case '3':
-                ringSpeeds[2] = ringSpeeds[2] === 0 ? 0.01 : 0;
+                ringMoveSpeeds[2] = ringMoveSpeeds[2] === 0 ? 0.02 : 0;
                 break;
         }
         updateMaterials();
@@ -137,18 +172,15 @@ function createObjects() {
 function init() {
     'use strict';
 
-    // Create scene, camera, lights, and objects
     createScene();
     createCamera();
     createLights();
     createObjects();
 
-    // Renderer setup
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // Enable VR if supported
     if (navigator.xr) {
         navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
             if (supported) {
@@ -164,11 +196,9 @@ function init() {
         console.warn('WebXR not available');
     }
 
-    // OrbitControls setup
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
-    // Stats setup
     stats = new Stats();
     document.body.appendChild(stats.dom);
 
@@ -182,14 +212,15 @@ function animate() {
     requestAnimationFrame(animate);
 
     rings.forEach((ring, index) => {
-        ring.position.y += ringSpeeds[index];
+        ring.rotation.z += ringSpeeds[index];
+
+        // Move rings along the y-axis
+        ring.position.y += ringDirections[index] * ringMoveSpeeds[index];
+
+        // Reverse direction if ring hits the limits
         if (ring.position.y > ringLimits.max || ring.position.y < ringLimits.min) {
-            ringSpeeds[index] *= -1;
+            ringDirections[index] *= -1;
         }
-        const surfaces = parametricSurfaces.filter(ps => ps.ring === ring).map(ps => ps.mesh);
-        surfaces.forEach(surface => {
-            surface.position.y = ring.position.y;
-        });
     });
 
     controls.update();
