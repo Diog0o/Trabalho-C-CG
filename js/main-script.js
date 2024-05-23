@@ -25,6 +25,52 @@ function createScene() {
 
     scene = new THREE.Scene();
 
+    function createMobiusStrip() {
+        const totalSegments = 2048;
+        const boxGeometry = new THREE.BoxGeometry(10, 10, 10);
+        let mobiusStrip = new THREE.Object3D();
+        let lightsArray = [];
+    
+        for (let i = 0; i < totalSegments; i++) {
+            const angle = Math.PI / totalSegments * 2 * i;
+    
+            if (i % (totalSegments / 8) === 0) {
+                let light = new THREE.PointLight(new THREE.Color('white'), 50, 50);
+                light.castShadow = true;
+                light.shadow.mapSize.width = 1024;
+                light.shadow.mapSize.height = 1024;
+                light.shadow.camera.near = 0.1;
+                light.shadow.camera.far = 50;
+    
+                light.position.set(Math.cos(angle), Math.sin(angle * 5) / 30, Math.sin(angle));
+                light.position.multiplyScalar(10);
+                lightsArray.push(light);
+                mobiusStrip.add(light);
+            }
+    
+            const segment = new THREE.Object3D();
+            segment.position.set(Math.cos(angle), Math.sin(angle * 5) / 30, Math.sin(angle));
+            segment.position.multiplyScalar(10);
+            segment.lookAt(0, 0, 0);
+            mobiusStrip.add(segment);
+    
+            const material = new THREE.MeshLambertMaterial();
+            material.color.set(new THREE.Color(`hsl(${5},55%,55%)`));
+            const boxMesh = new THREE.Mesh(boxGeometry, material);
+            boxMesh.scale.set(0.3, 0.3, 0.001);
+            boxMesh.castShadow = true;
+            boxMesh.receiveShadow = true;
+            boxMesh.rotation.x = angle / 2;
+    
+            segment.add(boxMesh);
+            scene.add(mobiusStrip);
+
+            mobiusStrip.position.set(0, 10, 0);
+            
+        }
+    }
+    
+
     function createRingGeometry(innerRadius, outerRadius, thickness, segments) {
         const shape = new THREE.Shape();
         shape.moveTo(outerRadius, 0);
@@ -104,6 +150,8 @@ function createScene() {
     });
     const skydome = new THREE.Mesh(skyGeometry, skyMaterial);
     scene.add(skydome);
+
+    createMobiusStrip();
 }
 
 function createCamera() {
