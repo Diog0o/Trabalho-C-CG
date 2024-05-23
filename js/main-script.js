@@ -52,8 +52,7 @@ function createScene() {
             const cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffff00 });
             const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
             // Center the cubes on the ring's thickness
-            cube.position.set(x, y, cubeSize / 2); 
-            cube.lookAt(0, 0, 0); // Ensure the cubes are facing outward
+            cube.position.set(x, y, cubeSize / 2 -1); 
             ring.add(cube);
         }
     }
