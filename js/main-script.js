@@ -23,6 +23,8 @@ let directionalLightOn = true; // Track the state of the directional light
 let pointLights = [];
 let pointLightOn = true; // Track the state of the point light (inicialmente ligada)
 
+let cubeLights = [];
+let cubeLightOn = true; // Track the state of the cube lights (inicialmente ligada)
 function createScene() {
     'use strict';
 
@@ -108,13 +110,15 @@ function createScene() {
             cube.position.set(x, y, cubeSize / 2 - 1); 
             ring.add(cube);
     
-            // Adicionar luz pontual embaixo do cubo
-            const light = new THREE.PointLight(0xffffff, 1, 10);
+            // Adicionar luz pontual embaixo do cubo e armazená-la na lista global
+            const light = new THREE.SpotLight(0xffffff, 1, 10);
             light.position.set(x, y, -cubeSize / 2); // Posição abaixo do cubo
             ring.add(light);
-            pointLights.push(light);
+            cubeLights.push(light);
         }
     }
+    
+    
     
 
     const ringGeometry1 = createRingGeometry(1, 3, 4, 32);
@@ -251,6 +255,10 @@ function createObjects() {
                     currentMaterialIndex = previousMaterialIndex;
                 }
                 useBasicMaterial = !useBasicMaterial; // Alterna entre o material básico (sem iluminação) e o material atual
+                break;
+            case 's':
+                cubeLightOn = !cubeLightOn;
+                cubeLights.forEach(light => light.visible = cubeLightOn);
                 break;
         }
         updateMaterials();
