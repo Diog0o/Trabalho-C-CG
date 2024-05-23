@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRButton } from 'three/addons/webxr/VRButton.js'; // vr
 import Stats from 'three/addons/libs/stats.module.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
+import { ParametricGeometries } from 'three/addons/geometries/ParametricGeometries.js';
 
 let scene, camera, renderer, controls, stats, gui;
 let rings = [];
@@ -17,6 +18,7 @@ const ambientLightIntensity = 0.2;
 const directionalLightColor = 0xffffff;
 const directionalLightIntensity = 1;
 let directionalLight;
+let directionalLightOn = true; // Track the state of the directional light
 
 function createScene() {
     'use strict';
@@ -162,6 +164,10 @@ function createObjects() {
                 break;
             case '3':
                 ringMoveSpeeds[2] = ringMoveSpeeds[2] === 0 ? 0.02 : 0;
+                break;
+            case 'd':
+                directionalLightOn = !directionalLightOn;
+                directionalLight.visible = directionalLightOn;
                 break;
         }
         updateMaterials();
