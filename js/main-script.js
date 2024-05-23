@@ -20,16 +20,19 @@ const directionalLightIntensity = 1;
 let directionalLight;
 let directionalLightOn = true; // Track the state of the directional light
 
+let pointLights = [];
+let pointLightOn = true; // Track the state of the point light (inicialmente ligada)
+
 function createScene() {
     'use strict';
 
     scene = new THREE.Scene();
 
+   
     function createMobiusStrip() {
         const totalSegments = 2048;
         const boxGeometry = new THREE.BoxGeometry(10, 10, 10);
         let mobiusStrip = new THREE.Object3D();
-        let lightsArray = [];
     
         for (let i = 0; i < totalSegments; i++) {
             const angle = Math.PI / totalSegments * 2 * i;
@@ -44,8 +47,8 @@ function createScene() {
     
                 light.position.set(Math.cos(angle), Math.sin(angle * 5) / 30, Math.sin(angle));
                 light.position.multiplyScalar(10);
-                lightsArray.push(light);
                 mobiusStrip.add(light);
+                pointLights.push(light); // Armazenar a luz pontual
             }
     
             const segment = new THREE.Object3D();
@@ -63,12 +66,14 @@ function createScene() {
             boxMesh.rotation.x = angle / 2;
     
             segment.add(boxMesh);
-            scene.add(mobiusStrip);
-
-            mobiusStrip.position.set(0, 10, 0);
-            
         }
+    
+        
+        mobiusStrip.position.set(0, 10, 0);
+        scene.add(mobiusStrip);
     }
+    
+    
     
 
     function createRingGeometry(innerRadius, outerRadius, thickness, segments) {
@@ -217,11 +222,15 @@ function createObjects() {
                 directionalLightOn = !directionalLightOn;
                 directionalLight.visible = directionalLightOn;
                 break;
+            case 'p':
+                pointLightOn = !pointLightOn;
+                pointLights.forEach(light => light.visible = pointLightOn); // Alternar visibilidade
+                break;
         }
         updateMaterials();
     });
+    
 }
-
 function init() {
     'use strict';
 
@@ -234,7 +243,7 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    document.body.appendChild( VRButton.createButton( renderer ) ); // vr
+    document.body.appendChild(VRButton.createButton(renderer)); // vr
     renderer.xr.enabled = true; // enabling xr rendering
 
     controls = new OrbitControls(camera, renderer.domElement);
