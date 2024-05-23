@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { VRButton } from 'three/addons/webxr/VRButton.js';
+import { VRButton } from 'three/addons/webxr/VRButton.js'; // vr
 import Stats from 'three/addons/libs/stats.module.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 
@@ -181,20 +181,8 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    if (navigator.xr) {
-        navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
-            if (supported) {
-                document.body.appendChild(VRButton.createButton(renderer));
-                renderer.xr.enabled = true;
-            } else {
-                console.warn('VR not supported');
-            }
-        }).catch((err) => {
-            console.error('Error checking VR support', err);
-        });
-    } else {
-        console.warn('WebXR not available');
-    }
+    document.body.appendChild( VRButton.createButton( renderer ) ); // vr
+    renderer.xr.enabled = true; // enabling xr rendering
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -209,7 +197,7 @@ function init() {
 }
 
 function animate() {
-    requestAnimationFrame(animate);
+    renderer.setAnimationLoop( function () {
 
     rings.forEach((ring, index) => {
         ring.rotation.z += ringSpeeds[index];
@@ -223,9 +211,10 @@ function animate() {
         }
     });
 
-    controls.update();
-    stats.update();
-    renderer.render(scene, camera);
+        controls.update();
+        stats.update();
+        renderer.render(scene, camera);
+    });
 }
 
 function onResize() {
