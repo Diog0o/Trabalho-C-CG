@@ -97,26 +97,376 @@ function createScene() {
         return new THREE.ExtrudeGeometry(shape, extrudeSettings);
     }
 
-    function addCubesToRing(ring, radius, cubeSize, numCubes) {
-        const angleStep = (Math.PI * 2) / numCubes;
-        for (let i = 0; i < numCubes; i++) {
+    function createGeometries() {
+        return {
+            kleinBottle: (() => {
+                const widthSegments = 30;
+                const heightSegments = 30;
+    
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                const indices = [];
+    
+                for (let i = 0; i <= widthSegments; i++) {
+                    const u = (i * Math.PI) / widthSegments;
+    
+                    for (let j = 0; j <= heightSegments; j++) {
+                        const v = (j * 2 * Math.PI) / heightSegments;
+                        const x =
+                            (2 + Math.cos(u / 2) * Math.sin(v) -
+                                Math.sin(u / 2) * Math.sin(2 * v)) *
+                            Math.cos(u);
+                        const y =
+                            (2 + Math.cos(u / 2) * Math.sin(v) -
+                                Math.sin(u / 2) * Math.sin(2 * v)) *
+                            Math.sin(u);
+                        const z =
+                            Math.sin(u / 2) * Math.sin(v) +
+                            Math.cos(u / 2) * Math.sin(2 * v);
+    
+                        vertices.push(x, y, z);
+                    }
+                }
+    
+                for (let i = 0; i < widthSegments; i++) {
+                    for (let j = 0; j < heightSegments; j++) {
+                        const a = i * (heightSegments + 1) + j;
+                        const b = i * (heightSegments + 1) + j + 1;
+                        const c = (i + 1) * (heightSegments + 1) + j;
+                        const d = (i + 1) * (heightSegments + 1) + j + 1;
+                        indices.push(a, b, d);
+                        indices.push(a, d, c);
+                    }
+                }
+    
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setIndex(indices);
+                geometry.computeVertexNormals();
+                geometry.scale(0.25, 0.25, 0.25);
+    
+                return geometry;
+            })(),
+            mobiusStrip: (() => {
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                const widthSegments = 100;
+                const heightSegments = 6;
+    
+                for (let i = 0; i <= widthSegments; i++) {
+                    const u = (i / widthSegments) * Math.PI * 2;
+                    for (let j = 0; j <= heightSegments; j++) {
+                        const v = (j / heightSegments - 0.5) * 2;
+                        const x = Math.cos(u) * (1 + v / 2 * Math.cos(u / 2));
+                        const y = Math.sin(u) * (1 + v / 2 * Math.cos(u / 2));
+                        const z = v / 2 * Math.sin(u / 2);
+                        vertices.push(x, y, z);
+                    }
+                }
+    
+                const indices = [];
+                for (let i = 1; i <= widthSegments; i++) {
+                    for (let j = 1; j <= heightSegments; j++) {
+                        const a = (heightSegments + 1) * i + j - 1;
+                        const b = (heightSegments + 1) * (i - 1) + j - 1;
+                        const c = (heightSegments + 1) * (i - 1) + j;
+                        const d = (heightSegments + 1) * i + j;
+                        indices.push(a, b, d);
+                        indices.push(b, c, d);
+                    }
+                }
+    
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setIndex(indices);
+                geometry.computeVertexNormals();
+                geometry.scale(0.5, 0.5, 0.5);
+    
+                return geometry;
+            })(),
+            torus: (() => {
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                const widthSegments = 30;
+                const heightSegments = 30;
+                const radius = 1;
+                const tube = 0.4;
+    
+                for (let i = 0; i <= widthSegments; i++) {
+                    const u = (i / widthSegments) * Math.PI * 2;
+                    for (let j = 0; j <= heightSegments; j++) {
+                        const v = (j / heightSegments) * Math.PI * 2;
+                        const x = (radius + tube * Math.cos(v)) * Math.cos(u);
+                        const y = (radius + tube * Math.cos(v)) * Math.sin(u);
+                        const z = tube * Math.sin(v);
+                        vertices.push(x, y, z);
+                    }
+                }
+    
+                const indices = [];
+                for (let i = 1; i <= widthSegments; i++) {
+                    for (let j = 1; j <= heightSegments; j++) {
+                        const a = (heightSegments + 1) * i + j - 1;
+                        const b = (heightSegments + 1) * (i - 1) + j - 1;
+                        const c = (heightSegments + 1) * (i - 1) + j;
+                        const d = (heightSegments + 1) * i + j;
+                        indices.push(a, b, d);
+                        indices.push(b, c, d);
+                    }
+                }
+    
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setIndex(indices);
+                geometry.computeVertexNormals();
+                geometry.scale(0.5, 0.5, 0.5);
+    
+                return geometry;
+            })(),
+            sphere: (() => {
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                const widthSegments = 30;
+                const heightSegments = 30;
+                const radius = 1;
+    
+                for (let i = 0; i <= widthSegments; i++) {
+                    const u = (i / widthSegments) * Math.PI * 2;
+                    for (let j = 0; j <= heightSegments; j++) {
+                        const v = (j / heightSegments) * Math.PI;
+                        const x = radius * Math.sin(v) * Math.cos(u);
+                        const y = radius * Math.sin(v) * Math.sin(u);
+                        const z = radius * Math.cos(v);
+                        vertices.push(x, y, z);
+                    }
+                }
+    
+                const indices = [];
+                for (let i = 1; i <= widthSegments; i++) {
+                    for (let j = 1; j <= heightSegments; j++) {
+                        const a = (heightSegments + 1) * i + j - 1;
+                        const b = (heightSegments + 1) * (i - 1) + j - 1;
+                        const c = (heightSegments + 1) * (i - 1) + j;
+                        const d = (heightSegments + 1) * i + j;
+                        indices.push(a, b, d);
+                        indices.push(b, c, d);
+                    }
+                }
+    
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setIndex(indices);
+                geometry.computeVertexNormals();
+                geometry.scale(0.5, 0.5, 0.5);
+    
+                return geometry;
+            })(),
+            plane: (() => {
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                const widthSegments = 10;
+                const heightSegments = 10;
+                const width = 1;
+                const height = 1;
+    
+                for (let i = 0; i <= widthSegments; i++) {
+                    const x = (i / widthSegments) * width - width / 2;
+                    for (let j = 0; j <= heightSegments; j++) {
+                        const y = (j / heightSegments) * height - height / 2;
+                        vertices.push(x, y, 0);
+                    }
+                }
+    
+                const indices = [];
+                for (let i = 1; i <= widthSegments; i++) {
+                    for (let j = 1; j <= heightSegments; j++) {
+                        const a = (heightSegments + 1) * i + j - 1;
+                        const b = (heightSegments + 1) * (i - 1) + j - 1;
+                        const c = (heightSegments + 1) * (i - 1) + j;
+                        const d = (heightSegments + 1) * i + j;
+                        indices.push(a, b, d);
+                        indices.push(b, c, d);
+                    }
+                }
+    
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setIndex(indices);
+                geometry.computeVertexNormals();
+                geometry.scale(0.5, 0.5, 0.5);
+    
+                return geometry;
+            })(),
+            cone: (() => {
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                const radius = 1;
+                const height = 2;
+                const radialSegments = 30;
+                const heightSegments = 1;
+    
+                for (let y = 0; y <= heightSegments; y++) {
+                    const v = y / heightSegments;
+                    const radiusY = radius * (1 - v);
+    
+                    for (let x = 0; x <= radialSegments; x++) {
+                        const u = x / radialSegments * Math.PI * 2;
+                        const vertexX = radiusY * Math.cos(u);
+                        const vertexY = -v * height + height / 2;
+                        const vertexZ = radiusY * Math.sin(u);
+                        vertices.push(vertexX, vertexY, vertexZ);
+                    }
+                }
+    
+                vertices.push(0, height / 2, 0); // apex
+    
+                const indices = [];
+                const apexIndex = vertices.length / 3 - 1;
+                for (let y = 0; y < heightSegments; y++) {
+                    for (let x = 0; x < radialSegments; x++) {
+                        const a = y * (radialSegments + 1) + x;
+                        const b = y * (radialSegments + 1) + x + 1;
+                        const c = (y + 1) * (radialSegments + 1) + x;
+                        const d = (y + 1) * (radialSegments + 1) + x + 1;
+                        indices.push(a, b, d);
+                        indices.push(a, d, c);
+                    }
+                }
+    
+                for (let x = 0; x < radialSegments; x++) {
+                    const a = x;
+                    const b = x + 1;
+                    indices.push(apexIndex, a, b);
+                }
+    
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setIndex(indices);
+                geometry.computeVertexNormals();
+                geometry.scale(0.5, 0.5, 0.5);
+    
+                return geometry;
+            })(),
+            ellipsoid: (() => {
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                const widthSegments = 30;
+                const heightSegments = 30;
+                const radiusX = 1;
+                const radiusY = 1.5;
+                const radiusZ = 1;
+    
+                for (let i = 0; i <= widthSegments; i++) {
+                    const u = (i / widthSegments) * Math.PI * 2;
+                    for (let j = 0; j <= heightSegments; j++) {
+                        const v = (j / heightSegments) * Math.PI;
+                        const x = radiusX * Math.sin(v) * Math.cos(u);
+                        const y = radiusY * Math.sin(v) * Math.sin(u);
+                        const z = radiusZ * Math.cos(v);
+                        vertices.push(x, y, z);
+                    }
+                }
+    
+                const indices = [];
+                for (let i = 1; i <= widthSegments; i++) {
+                    for (let j = 1; j <= heightSegments; j++) {
+                        const a = (heightSegments + 1) * i + j - 1;
+                        const b = (heightSegments + 1) * (i - 1) + j - 1;
+                        const c = (heightSegments + 1) * (i - 1) + j;
+                        const d = (heightSegments + 1) * i + j;
+                        indices.push(a, b, d);
+                        indices.push(b, c, d);
+                    }
+                }
+    
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setIndex(indices);
+                geometry.computeVertexNormals();
+                geometry.scale(0.5, 0.5, 0.5);
+    
+                return geometry;
+            })(),
+            torusKnot: (() => {
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                const p = 2;
+                const q = 3;
+                const radius = 1;
+                const tube = 0.4;
+                const tubularSegments = 64;
+                const radialSegments = 8;
+    
+                for (let i = 0; i <= tubularSegments; i++) {
+                    const u = (i / tubularSegments) * Math.PI * 2 * p;
+                    const x = radius * (2 + Math.cos(q * u)) * Math.cos(u);
+                    const y = radius * (2 + Math.cos(q * u)) * Math.sin(u);
+                    const z = radius * Math.sin(q * u);
+    
+                    for (let j = 0; j <= radialSegments; j++) {
+                        const v = (j / radialSegments) * Math.PI * 2;
+                        const vertexX = x + tube * Math.cos(v) * Math.cos(u);
+                        const vertexY = y + tube * Math.cos(v) * Math.sin(u);
+                        const vertexZ = z + tube * Math.sin(v);
+                        vertices.push(vertexX, vertexY, vertexZ);
+                    }
+                }
+    
+                const indices = [];
+                for (let i = 0; i < tubularSegments; i++) {
+                    for (let j = 0; j < radialSegments; j++) {
+                        const a = i * (radialSegments + 1) + j;
+                        const b = i * (radialSegments + 1) + j + 1;
+                        const c = (i + 1) * (radialSegments + 1) + j;
+                        const d = (i + 1) * (radialSegments + 1) + j + 1;
+                        indices.push(a, b, d);
+                        indices.push(a, d, c);
+                    }
+                }
+    
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setIndex(indices);
+                geometry.computeVertexNormals();
+                geometry.scale(0.2, 0.2, 0.2);
+    
+                return geometry;
+            })(),
+        };
+    }
+    
+    
+    
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+    
+    function addParametricObjectsToRing(ring, radius, geometries, numObjects) {
+        const angleStep = (Math.PI * 2) / numObjects;
+        const geometryKeys = Object.keys(geometries);
+    
+        // Embaralhar as chaves das geometrias para ordem aleatória
+        const shuffledKeys = shuffleArray([...geometryKeys]);
+    
+        for (let i = 0; i < numObjects; i++) {
             const angle = i * angleStep;
             const x = radius * Math.cos(angle);
             const y = radius * Math.sin(angle);
-            const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-            const cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffff00 });
-            const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-            // Center the cubes on the ring's thickness
-            cube.position.set(x, y, cubeSize / 2 - 1); 
-            ring.add(cube);
     
-            // Adicionar luz pontual embaixo do cubo e armazená-la na lista global
+            // Selecionar a geometria embaralhada
+            const geometry = geometries[shuffledKeys[i % shuffledKeys.length]];
+            const parametricMaterial = new THREE.MeshLambertMaterial({ color: 0xffff00 });
+            const parametricObject = new THREE.Mesh(geometry, parametricMaterial);
+    
+            // Centralizar os objetos na espessura do anel
+            parametricObject.position.set(x, y, -1);
+            ring.add(parametricObject);
+    
+            // Adicionar uma luz spot abaixo do objeto paramétrico
             const light = new THREE.SpotLight(0xffffff, 1, 10);
-            light.position.set(x, y, -cubeSize / 2); // Posição abaixo do cubo
+            light.position.set(x, y, -1/2); // Posição abaixo do objeto paramétrico
             ring.add(light);
             cubeLights.push(light);
         }
     }
+    
     
     
     
@@ -129,7 +479,10 @@ function createScene() {
     rings.push(ring1);
     scene.add(ring1);
 
-    addCubesToRing(ring1, 2, 0.5, 8);
+    const geometries = createGeometries();
+    addParametricObjectsToRing(ring1, 2, geometries, 8);
+
+    //addCubesToRing(ring1, 2, 0.5, 8);
 
 
     const ringGeometry2 = createRingGeometry(3, 5, 4, 32);
@@ -139,7 +492,7 @@ function createScene() {
     ring2.position.set(0, 0, 0);
     rings.push(ring2);
     scene.add(ring2);
-    addCubesToRing(ring2, 4, 0.5, 8);
+    addParametricObjectsToRing(ring2, 4, geometries, 8);
 
     const ringGeometry3 = createRingGeometry(5, 7, 4, 32);
     const ringMaterial3 = new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
@@ -148,7 +501,7 @@ function createScene() {
     ring3.position.set(0, 0, 0);
     rings.push(ring3);
     scene.add(ring3);
-    addCubesToRing(ring3, 6, 0.5, 8);
+    addParametricObjectsToRing(ring3, 6, geometries, 8);
 
     const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 8, 32);
     const cylinderMaterial = new THREE.MeshNormalMaterial();
