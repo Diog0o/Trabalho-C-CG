@@ -105,13 +105,20 @@ function createScene() {
             const cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xffff00 });
             const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
             // Center the cubes on the ring's thickness
-            cube.position.set(x, y, cubeSize / 2 -1); 
+            cube.position.set(x, y, cubeSize / 2 - 1); 
             ring.add(cube);
+    
+            // Adicionar luz pontual embaixo do cubo
+            const light = new THREE.PointLight(0xffffff, 1, 10);
+            light.position.set(x, y, -cubeSize / 2); // Posição abaixo do cubo
+            ring.add(light);
+            pointLights.push(light);
         }
     }
+    
 
     const ringGeometry1 = createRingGeometry(1, 3, 4, 32);
-    const ringMaterial1 = new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+    const ringMaterial1 = new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
     const ring1 = new THREE.Mesh(ringGeometry1, ringMaterial1);
     ring1.rotation.x = Math.PI / 2;
     ring1.position.set(0, 0, 0);
@@ -122,7 +129,7 @@ function createScene() {
 
 
     const ringGeometry2 = createRingGeometry(3, 5, 4, 32);
-    const ringMaterial2 = new THREE.MeshPhongMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+    const ringMaterial2 = new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
     const ring2 = new THREE.Mesh(ringGeometry2, ringMaterial2);
     ring2.rotation.x = Math.PI / 2;
     ring2.position.set(0, 0, 0);
@@ -131,7 +138,7 @@ function createScene() {
     addCubesToRing(ring2, 4, 0.5, 8);
 
     const ringGeometry3 = createRingGeometry(5, 7, 4, 32);
-    const ringMaterial3 = new THREE.MeshToonMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
+    const ringMaterial3 = new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
     const ring3 = new THREE.Mesh(ringGeometry3, ringMaterial3);
     ring3.rotation.x = Math.PI / 2;
     ring3.position.set(0, 0, 0);
@@ -182,8 +189,8 @@ function createObjects() {
 
     const materials = [
         new THREE.MeshLambertMaterial({ color: 0x0000ff }),
-        new THREE.MeshPhongMaterial({ color: 0x0000ff }),
-        new THREE.MeshToonMaterial({ color: 0x0000ff }),
+        new THREE.MeshPhongMaterial({ color: 0x00ff00 }),
+        new THREE.MeshToonMaterial({ color: 0xff0000 }),
         new THREE.MeshNormalMaterial()
     ];
 
