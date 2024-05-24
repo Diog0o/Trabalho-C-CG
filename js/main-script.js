@@ -33,13 +33,14 @@ function createScene() {
    
     function createMobiusStrip() {
         const totalSegments = 2048;
+        const calc = 256;
         const boxGeometry = new THREE.BoxGeometry(10, 10, 10);
         let mobiusStrip = new THREE.Object3D();
     
         for (let i = 0; i < totalSegments; i++) {
             const angle = Math.PI / totalSegments * 2 * i;
     
-            if (i % (totalSegments / 8) === 0) {
+            if (i % calc === 0) {
                 let light = new THREE.PointLight(new THREE.Color('white'), 50, 50);
                 light.castShadow = true;
                 light.shadow.mapSize.width = 1024;
