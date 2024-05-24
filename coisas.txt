@@ -1,0 +1,18 @@
+cilindro do centro tem que girar
+
+skydome tem que ser so o interior da semi esfera- nao pode estar como esta agora onde temos skydome em todo o lado
+
+usar parametricGeometry obrigatorio
+
+cada objeto no anel tem que rodar num eixo de rotação diferente. Temos que quando instanciamos meter logo
+a peça rodada. Tem que ser diferentes entre aneis, no anel mais exterior tem que ser maiores.
+
+luz ambiente nao esta a funcionar
+
+luz direcional tem que bater de lado nao pode ser 90 graus
+
+as luzes de cada objeto tem que estar a apontar para cima
+
+criar um objeto e dar append da camera. Depois esse objeto mexe se
+
+meter os aneis mais curtos
