@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { VRButton } from 'three/addons/webxr/VRButton.js'; // vr
+import { VRButton } from 'three/addons/webxr/VRButton.js';
 import Stats from 'three/addons/libs/stats.module.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 
@@ -10,21 +10,21 @@ let rings = [];
 let keyState = {};
 let ringSpeeds = [0.01, 0.01, 0.01];
 const ringLimits = { min: -1, max: 3 };
-const ringMoveSpeeds = [0.02, 0.02, 0.02];  // Speed of movement along the y-axis
-let ringDirections = [1, 1, 1];  // Direction of movement along the y-axis
+const ringMoveSpeeds = [0.02, 0.02, 0.02];
+let ringDirections = [1, 1, 1];
 
 const ambientLightColor = 0xffa500;
 const ambientLightIntensity = 0.2;
 const directionalLightColor = 0xffffff;
 const directionalLightIntensity = 1;
 let directionalLight;
-let directionalLightOn = true; // Track the state of the directional light
+let directionalLightOn = true;
 
 let pointLights = [];
-let pointLightOn = true; // Track the state of the point light (inicialmente ligada)
+let pointLightOn = true;
 
 let cubeLights = [];
-let cubeLightOn = true; // Track the state of the cube lights (inicialmente ligada)
+let cubeLightOn = true;
 function createScene() {
     'use strict';
 
@@ -51,7 +51,7 @@ function createScene() {
                 light.position.set(Math.cos(angle), Math.sin(angle * 5) / 30, Math.sin(angle));
                 light.position.multiplyScalar(10);
                 mobiusStrip.add(light);
-                pointLights.push(light); // Armazenar a luz pontual
+                pointLights.push(light);
             }
     
             const segment = new THREE.Object3D();
@@ -71,7 +71,6 @@ function createScene() {
             segment.add(boxMesh);
         }
     
-        // Centralizar a faixa de Möbius no eixo Y
         mobiusStrip.position.set(0, 10, 0);
         scene.add(mobiusStrip);
     }
@@ -95,7 +94,6 @@ function createScene() {
         return new THREE.ExtrudeGeometry(shape, extrudeSettings);
     }
 
-    // Shuffle array utility function
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -107,14 +105,11 @@ function createScene() {
     function addParametricObjectsToRing(ring, radius, numObjects, flag) {
         const angleStep = (Math.PI * 2) / numObjects;
         
-
-        
         for (let i = 0; i < numObjects; i++) {
             const angle = i * angleStep;
             const x = radius * Math.cos(angle);
             const y = radius * Math.sin(angle);
     
-            // Definir uma função paramétrica para a geometria
             const parametricFunction = function (u, v, target) {
                 const x = Math.sin(u * Math.PI) * Math.cos(v * Math.PI);
                 const y = Math.sin(u * Math.PI) * Math.sin(v * Math.PI);
@@ -192,13 +187,9 @@ function createScene() {
                 target.set(x, y, z);
             };
 
-            //create a list with numbers from 1 to 8
             const numbers = Array.from({ length: 8 }, (_, i) => i + 1);
-            //shuffle the list
             const shuffledNumbers = shuffleArray(numbers);
-            //get the first element of the shuffled list
             const geometryIndex = shuffledNumbers[0];
-            //retirar o elemento do array
             numbers.shift();
             
             let geometry;
@@ -248,28 +239,24 @@ function createScene() {
                 geometry.scale(0.5, 0.5, 0.5);
             }
     
-            // Definir a escala baseada no anel (maior para o anel exterior)
             if (flag == 3) {
-                parametricObject.scale.set(1.5, 1.5, 1.5); // Escala maior para anel exterior
+                parametricObject.scale.set(1.5, 1.5, 1.5);
             } else if (flag == 1) {
-                parametricObject.scale.set(0.75, 0.75, 0.75); // Escala menor para anel interior
+                parametricObject.scale.set(0.75, 0.75, 0.75);
             }
-    
-            // Adicionar rotação aleatória
+
             parametricObject.rotation.x = Math.random() * 2 * Math.PI;
             parametricObject.rotation.y = Math.random() * 2 * Math.PI;
             parametricObject.rotation.z = Math.random() * 2 * Math.PI;
     
-            // Centralizar os objetos na espessura do anel
             parametricObject.position.set(x, y, -1);
             ring.add(parametricObject);
     
-            // Adicionar uma luz spot abaixo do objeto paramétrico
             const light = new THREE.SpotLight(0xffffff, 5, 5);
-            light.position.set(x, y, -1.5); // Posição abaixo do objeto paramétrico
-            light.target = parametricObject; // A luz apontará para o objeto paramétrico
+            light.position.set(x, y, -1.5);
+            light.target = parametricObject;
             ring.add(light);
-            ring.add(light.target); // Adicionar o target ao ring, caso contrário não será renderizado corretamente
+            ring.add(light.target);
             cubeLights.push(light);
         }
     }
@@ -329,10 +316,9 @@ function createCamera() {
     'use strict';
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    //camera.position.z = 10;
 
     cameraGroup = new THREE.Group();
-    cameraGroup.position.set(10, 10, 20); // Set the position offset
+    cameraGroup.position.set(10, 10, 20);
     cameraGroup.add(camera);
 }
 
@@ -358,8 +344,8 @@ function createObjects() {
     ];
 
     let currentMaterialIndex = 0;
-    let previousMaterialIndex = 0; // Armazena o índice do material antes de alternar para o material básico
-    let useBasicMaterial = false; // Controla se o material básico (sem iluminação) está sendo usado
+    let previousMaterialIndex = 0;
+    let useBasicMaterial = false;
 
     function updateMaterials() {
         if (useBasicMaterial) {
@@ -407,14 +393,12 @@ function createObjects() {
                 break;
             case 't':
                 if (!useBasicMaterial) {
-                    // Salva o índice do material antes de alternar para o material básico
                     previousMaterialIndex = currentMaterialIndex;
-                    currentMaterialIndex = materials.length; // Índice para o material básico
+                    currentMaterialIndex = materials.length; 
                 } else {
-                    // Volta para o material anterior (com iluminação)
                     currentMaterialIndex = previousMaterialIndex;
                 }
-                useBasicMaterial = !useBasicMaterial; // Alterna entre o material básico (sem iluminação) e o material atual
+                useBasicMaterial = !useBasicMaterial;
                 break;
             case 's':
                 cubeLightOn = !cubeLightOn;
@@ -437,8 +421,8 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    document.body.appendChild(VRButton.createButton(renderer)); // vr
-    renderer.xr.enabled = true; // enabling xr rendering
+    document.body.appendChild(VRButton.createButton(renderer));
+    renderer.xr.enabled = true;
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -455,34 +439,25 @@ function init() {
 function animate() {
     renderer.setAnimationLoop( function () {
 
-    // Rotacionar o cilindro central
     if (cylinder) {
         cylinder.rotation.y += 0.01;
     }
 
     rings.forEach((ring, index) => {
         ring.rotation.z += ringSpeeds[index];
-
-        // Move rings along the y-axis
         ring.position.y += ringDirections[index] * ringMoveSpeeds[index];
 
-        // Reverse direction if ring hits the limits
         if (ring.position.y > ringLimits.max || ring.position.y < ringLimits.min) {
             ringDirections[index] *= -1;
         }
     });
 
-
-        // Para cada anel, rotacionar os objetos paramétricos
         rings.forEach(ring => {
             ring.children.forEach(child => {
                 if (child instanceof THREE.Mesh) {
-                    // Translação para o centro
                     child.position.sub(ring.position);
-                    // Rotação em torno do próprio eixo
                     child.rotation.x += 0.01;
                     child.rotation.y += 0.01;
-                    // Translação de volta à posição original
                     child.position.add(ring.position);
                 }
             });
