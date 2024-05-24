@@ -660,6 +660,21 @@ function animate() {
         }
     });
 
+    // Para cada anel, rotacionar os objetos paramétricos
+    rings.forEach(ring => {
+        ring.children.forEach(child => {
+            if (child instanceof THREE.Mesh) {
+                // Translação para o centro
+                child.position.sub(ring.position);
+                // Rotação em torno do próprio eixo
+                child.rotation.x += 0.01;
+                child.rotation.y += 0.01;
+                // Translação de volta à posição original
+                child.position.add(ring.position);
+            }
+        });
+    });
+
         controls.update();
         stats.update();
         renderer.render(scene, camera);
