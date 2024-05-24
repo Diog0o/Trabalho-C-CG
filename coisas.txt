@@ -1,8 +1,5 @@
 usar parametricGeometry obrigatorio (Diogo)
 
-cada objeto no anel tem que rodar num eixo de rotação diferente. Temos que quando instanciamos meter logo
-a peça rodada. Tem que ser diferentes entre aneis, no anel mais exterior tem que ser maiores. (Diogo)
-
 luz ambiente nao esta a funcionar (Bento)
 
 luz direcional tem que bater de lado nao pode ser 90 graus (Bento)

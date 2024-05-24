@@ -433,7 +433,7 @@ function createScene() {
         return array;
     }
     
-    function addParametricObjectsToRing(ring, radius, geometries, numObjects) {
+    function addParametricObjectsToRing(ring, radius, geometries, numObjects, flag) {
         const angleStep = (Math.PI * 2) / numObjects;
         const geometryKeys = Object.keys(geometries);
     
@@ -449,6 +449,18 @@ function createScene() {
             const geometry = geometries[shuffledKeys[i % shuffledKeys.length]];
             const parametricMaterial = new THREE.MeshLambertMaterial({ color: 0xffff00 });
             const parametricObject = new THREE.Mesh(geometry, parametricMaterial);
+
+            // Definir a escala baseada no anel (maior para o anel exterior)
+            if (flag == 3) {
+                parametricObject.scale.set(1.5, 1.5, 1.5); // Escala maior para anel exterior
+            }if (flag == 1) {
+                parametricObject.scale.set(0.75, 0.75, 0.75); // Escala menor para anel interior
+            }
+
+             // Adicionar rotação aleatória
+            parametricObject.rotation.x = Math.random() * 2 * Math.PI;
+            parametricObject.rotation.y = Math.random() * 2 * Math.PI;
+            parametricObject.rotation.z = Math.random() * 2 * Math.PI;
     
             // Centralizar os objetos na espessura do anel
             parametricObject.position.set(x, y, -1);
@@ -471,9 +483,7 @@ function createScene() {
     scene.add(ring1);
 
     const geometries = createGeometries();
-    addParametricObjectsToRing(ring1, 2, geometries, 8);
-
-    //addCubesToRing(ring1, 2, 0.5, 8);
+    addParametricObjectsToRing(ring1, 2, geometries, 8, 1);
 
 
     const ringGeometry2 = createRingGeometry(3, 5, 2, 32);
@@ -483,16 +493,16 @@ function createScene() {
     ring2.position.set(0, 0, 0);
     rings.push(ring2);
     scene.add(ring2);
-    addParametricObjectsToRing(ring2, 4, geometries, 8);
+    addParametricObjectsToRing(ring2, 4, geometries, 8, 2);
 
     const ringGeometry3 = createRingGeometry(5, 7, 2, 32);
     const ringMaterial3 = new THREE.MeshLambertMaterial({ color: 0x0000ff });
     const ring3 = new THREE.Mesh(ringGeometry3, ringMaterial3);
     ring3.rotation.x = Math.PI / 2;
-    ring3.position.set(0, 0, 0);
+    ring3.position.set(0, 0, 0);    
     rings.push(ring3);
     scene.add(ring3);
-    addParametricObjectsToRing(ring3, 6, geometries, 8);
+    addParametricObjectsToRing(ring3, 6, geometries, 8, 3);
 
     const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 6, 32);
     const cylinderMaterial = new THREE.MeshLambertMaterial({ color: 0x0000ff});
@@ -560,6 +570,7 @@ function createObjects() {
         } else {
             rings.forEach(ring => {
                 ring.material = materials[currentMaterialIndex];
+                cylinder.material = materials[currentMaterialIndex];
             });
         }
     }
