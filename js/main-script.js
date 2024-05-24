@@ -509,17 +509,22 @@ function createScene() {
         side: THREE.BackSide
     });
     const skydome = new THREE.Mesh(skyGeometry, skyMaterial);
-    
+
     scene.add(skydome);
 
     createMobiusStrip();
 }
 
+var cameraGroup;
 function createCamera() {
     'use strict';
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 10;
+    //camera.position.z = 10;
+
+    cameraGroup = new THREE.Group();
+    cameraGroup.position.set(10, 10, 20); // Set the position offset
+    cameraGroup.add(camera);
 }
 
 function createLights() {
@@ -675,7 +680,7 @@ function animate() {
 
         controls.update();
         stats.update();
-        renderer.render(scene, camera);
+        renderer.render(scene, cameraGroup.children[0]);
     });
 }
 
