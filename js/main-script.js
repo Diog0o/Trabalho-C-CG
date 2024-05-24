@@ -444,22 +444,25 @@ function createScene() {
             const angle = i * angleStep;
             const x = radius * Math.cos(angle);
             const y = radius * Math.sin(angle);
-    
+        
             // Selecionar a geometria embaralhada
             const geometry = geometries[shuffledKeys[i % shuffledKeys.length]];
             const parametricMaterial = new THREE.MeshLambertMaterial({ color: 0xffff00 });
             const parametricObject = new THREE.Mesh(geometry, parametricMaterial);
-    
+        
             // Centralizar os objetos na espessura do anel
             parametricObject.position.set(x, y, -1);
             ring.add(parametricObject);
-    
+        
             // Adicionar uma luz spot abaixo do objeto paramétrico
-            const light = new THREE.SpotLight(0xffffff, 1, 10);
-            light.position.set(x, y, -1/2); // Posição abaixo do objeto paramétrico
+            const light = new THREE.SpotLight(0xffffff, 5, 5);
+            light.position.set(x, y, -1.5); // Posição abaixo do objeto paramétrico
+            light.target = parametricObject; // A luz apontará para o objeto paramétrico
             ring.add(light);
+            ring.add(light.target); // Adicionar o target ao ring, caso contrário não será renderizado corretamente
             cubeLights.push(light);
         }
+        
     }
     
     const ringGeometry1 = createRingGeometry(1, 3, 2, 32);
