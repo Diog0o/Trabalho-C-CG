@@ -1,5 +1,3 @@
-cilindro do centro tem que girar (Diogo)
-
 usar parametricGeometry obrigatorio (Diogo)
 
 cada objeto no anel tem que rodar num eixo de rotação diferente. Temos que quando instanciamos meter logo
