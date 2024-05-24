@@ -5,7 +5,7 @@ import Stats from 'three/addons/libs/stats.module.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 import { ParametricGeometries } from 'three/addons/geometries/ParametricGeometries.js';
 
-let scene, camera, renderer, controls, stats, gui;
+let scene, camera, renderer, controls, stats, cylinder;
 let rings = [];
 let keyState = {};
 let ringSpeeds = [0.01, 0.01, 0.01];
@@ -76,9 +76,6 @@ function createScene() {
         scene.add(mobiusStrip);
     }
     
-    
-    
-
     function createRingGeometry(innerRadius, outerRadius, thickness, segments) {
         const shape = new THREE.Shape();
         shape.moveTo(outerRadius, 0);
@@ -428,9 +425,6 @@ function createScene() {
         };
     }
     
-    
-    
-
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -468,10 +462,6 @@ function createScene() {
         }
     }
     
-    
-    
-    
-
     const ringGeometry1 = createRingGeometry(1, 3, 4, 32);
     const ringMaterial1 = new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
     const ring1 = new THREE.Mesh(ringGeometry1, ringMaterial1);
@@ -506,7 +496,7 @@ function createScene() {
 
     const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 8, 32);
     const cylinderMaterial = new THREE.MeshNormalMaterial();
-    const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+    cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
     cylinder.position.set(0, 0, 0);
     scene.add(cylinder);
 
@@ -648,6 +638,11 @@ function init() {
 
 function animate() {
     renderer.setAnimationLoop( function () {
+
+    // Rotacionar o cilindro central
+    if (cylinder) {
+        cylinder.rotation.y += 0.01;
+    }
 
     rings.forEach((ring, index) => {
         ring.rotation.z += ringSpeeds[index];
