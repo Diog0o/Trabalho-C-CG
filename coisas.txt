@@ -1,5 +1,3 @@
-skydome tem que ser so o interior da semi esfera- nao pode estar como esta agora onde temos skydome em todo o lado (Meireles)
-
 usar parametricGeometry obrigatorio (Diogo)
 
 cada objeto no anel tem que rodar num eixo de rotação diferente. Temos que quando instanciamos meter logo

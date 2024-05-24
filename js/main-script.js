@@ -503,12 +503,13 @@ function createScene() {
     const loader = new THREE.TextureLoader();
     const texture = loader.load('imagem.png');
 
-    const skyGeometry = new THREE.SphereGeometry(500, 60, 40);
+    const skyGeometry = new THREE.SphereGeometry(500, 60, 40, 0, Math.PI * 2, 0, Math.PI / 2);
     const skyMaterial = new THREE.MeshBasicMaterial({
         map: texture,
         side: THREE.BackSide
     });
     const skydome = new THREE.Mesh(skyGeometry, skyMaterial);
+    
     scene.add(skydome);
 
     createMobiusStrip();
