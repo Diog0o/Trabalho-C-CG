@@ -4,7 +4,6 @@ import { VRButton } from 'three/addons/webxr/VRButton.js';
 import Stats from 'three/addons/libs/stats.module.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 
-
 let scene, camera, renderer, controls, stats, cylinder;
 let rings = [];
 let keyState = {};
@@ -30,7 +29,6 @@ function createScene() {
 
     scene = new THREE.Scene();
 
-   
     function createMobiusStrip() {
         const totalSegments = 2048;
         const calc = 256;
@@ -196,7 +194,6 @@ function createScene() {
             let parametricMaterial;
             let parametricObject;
 
-
             if (geometryIndex === 1) {
                 geometry = new ParametricGeometry(parametricPlane, 25, 25);
                 parametricMaterial = new THREE.MeshLambertMaterial({ color: 0xffff00 });
@@ -270,7 +267,6 @@ function createScene() {
     scene.add(ring1);
 
     addParametricObjectsToRing(ring1, 2, 8, 1);
-
 
     const ringGeometry2 = createRingGeometry(3, 5, 2, 32);
     const ringMaterial2 = new THREE.MeshLambertMaterial({ color: 0x0000ff});
@@ -452,16 +448,16 @@ function animate() {
         }
     });
 
-        rings.forEach(ring => {
-            ring.children.forEach(child => {
-                if (child instanceof THREE.Mesh) {
-                    child.position.sub(ring.position);
-                    child.rotation.x += 0.01;
-                    child.rotation.y += 0.01;
-                    child.position.add(ring.position);
-                }
-            });
+    rings.forEach(ring => {
+        ring.children.forEach(child => {
+            if (child instanceof THREE.Mesh) {
+                child.position.sub(ring.position);
+                child.rotation.x += 0.01;
+                child.rotation.y += 0.01;
+                child.position.add(ring.position);
+            }
         });
+    });
 
         controls.update();
         stats.update();
