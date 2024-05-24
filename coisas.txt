@@ -1,6 +1,1 @@
-usar parametricGeometry obrigatorio (Diogo)
-
-luz ambiente nao esta a funcionar (Bento)
-
-
-
+tudo feito blessed
