@@ -9,7 +9,7 @@ let scene, camera, renderer, controls, stats, cylinder;
 let rings = [];
 let keyState = {};
 let ringSpeeds = [0.01, 0.01, 0.01];
-const ringLimits = { min: 0, max: 4 };
+const ringLimits = { min: -1, max: 3 };
 const ringMoveSpeeds = [0.02, 0.02, 0.02];  // Speed of movement along the y-axis
 let ringDirections = [1, 1, 1];  // Direction of movement along the y-axis
 
@@ -462,8 +462,8 @@ function createScene() {
         }
     }
     
-    const ringGeometry1 = createRingGeometry(1, 3, 4, 32);
-    const ringMaterial1 = new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
+    const ringGeometry1 = createRingGeometry(1, 3, 2, 32);
+    const ringMaterial1 = new THREE.MeshLambertMaterial({ color: 0x0000ff});
     const ring1 = new THREE.Mesh(ringGeometry1, ringMaterial1);
     ring1.rotation.x = Math.PI / 2;
     ring1.position.set(0, 0, 0);
@@ -476,8 +476,8 @@ function createScene() {
     //addCubesToRing(ring1, 2, 0.5, 8);
 
 
-    const ringGeometry2 = createRingGeometry(3, 5, 4, 32);
-    const ringMaterial2 = new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
+    const ringGeometry2 = createRingGeometry(3, 5, 2, 32);
+    const ringMaterial2 = new THREE.MeshLambertMaterial({ color: 0x0000ff});
     const ring2 = new THREE.Mesh(ringGeometry2, ringMaterial2);
     ring2.rotation.x = Math.PI / 2;
     ring2.position.set(0, 0, 0);
@@ -485,8 +485,8 @@ function createScene() {
     scene.add(ring2);
     addParametricObjectsToRing(ring2, 4, geometries, 8);
 
-    const ringGeometry3 = createRingGeometry(5, 7, 4, 32);
-    const ringMaterial3 = new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
+    const ringGeometry3 = createRingGeometry(5, 7, 2, 32);
+    const ringMaterial3 = new THREE.MeshLambertMaterial({ color: 0x0000ff });
     const ring3 = new THREE.Mesh(ringGeometry3, ringMaterial3);
     ring3.rotation.x = Math.PI / 2;
     ring3.position.set(0, 0, 0);
@@ -494,8 +494,8 @@ function createScene() {
     scene.add(ring3);
     addParametricObjectsToRing(ring3, 6, geometries, 8);
 
-    const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 8, 32);
-    const cylinderMaterial = new THREE.MeshNormalMaterial();
+    const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 6, 32);
+    const cylinderMaterial = new THREE.MeshLambertMaterial({ color: 0x0000ff});
     cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
     cylinder.position.set(0, 0, 0);
     scene.add(cylinder);

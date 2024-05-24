@@ -10,5 +10,3 @@ luz direcional tem que bater de lado nao pode ser 90 graus (Bento)
 as luzes de cada objeto tem que estar a apontar para cima (Bento)
 
 criar um objeto e dar append da camera. Depois esse objeto mexe se (Meireles)
-
-meter os aneis mais curtos (Bento)
